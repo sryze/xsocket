@@ -69,11 +69,11 @@
 typedef int (*recv_handler_t)(
   const char *buf, int len, int chunk_offset, int chunk_len);
 
-int socket_init(void);
-int socket_cleanup(void);
-
 int get_socket_error(void);
 int get_socket_errno(void);
+
+int socket_init(void);
+int socket_cleanup(void);
 
 int recv_n(
   socket_t sock, char *buf, int size, int flags, recv_handler_t handler);

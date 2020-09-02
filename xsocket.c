@@ -27,18 +27,6 @@
 #include <string.h>
 #include "xsocket.h"
 
-int socket_init(void)
-{
-  WSADATA wsa_data;
-
-  return WSAStartup(MAKEWORD(2, 2), &wsa_data);
-}
-
-int socket_cleanup(void)
-{
-  return WSACleanup();
-}
-
 int get_socket_error(void)
 {
 #ifdef _WIN32
@@ -165,6 +153,25 @@ int get_socket_errno(void)
   }
 #else
   return errno;
+#endif
+}
+
+int socket_init(void)
+{
+#ifdef _WIN32
+  WSADATA wsa_data;
+  return WSAStartup(MAKEWORD(2, 2), &wsa_data);
+#else
+  /* nothing to do */
+#endif
+}
+
+int socket_cleanup(void)
+{
+#ifdef _WIN32
+  return WSACleanup();
+#else
+  /* nothing to do */
 #endif
 }
 
