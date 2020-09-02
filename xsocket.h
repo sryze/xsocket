@@ -52,11 +52,22 @@
   typedef struct pollfd pollfd_t;
 #endif
 
+#ifndef htonll
+  #define htonll(x) ((1==htonl(1)) \
+    ? (x) \
+    : ((uint64_t)htonl((x) & 0xFFFFFFFF) << 32) | htonl((x) >> 32))
+#endif
+#ifndef ntohll
+  #define ntohll(x) ((1==ntohl(1)) \
+    ? (x) \
+    : ((uint64_t)ntohl((x) & 0xFFFFFFFF) << 32) | ntohl((x) >> 32))
+#endif
+
 #define socket_error get_socket_error()
 #define socket_errno get_socket_errno()
 
 typedef int (*recv_handler_t)(
-    const char *buf, int len, int chunk_offset, int chunk_len);
+  const char *buf, int len, int chunk_offset, int chunk_len);
 
 int socket_init(void);
 int socket_cleanup(void);
@@ -65,7 +76,7 @@ int get_socket_error(void);
 int get_socket_errno(void);
 
 int recv_n(
-    socket_t sock, char *buf, int size, int flags, recv_handler_t handler);
+  socket_t sock, char *buf, int size, int flags, recv_handler_t handler);
 int send_n(socket_t sock, const char *buf, int size, int flags);
 int send_string(socket_t sock, char *s);
 
