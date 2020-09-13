@@ -162,7 +162,7 @@ int socket_init(void)
   WSADATA wsa_data;
   return WSAStartup(MAKEWORD(2, 2), &wsa_data);
 #else
-  /* nothing to do */
+  return 0;
 #endif
 }
 
@@ -171,7 +171,7 @@ int socket_cleanup(void)
 #ifdef _WIN32
   return WSACleanup();
 #else
-  /* nothing to do */
+  return 0;
 #endif
 }
 

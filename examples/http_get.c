@@ -1,5 +1,6 @@
 /* http_get - fetch the contents of google.com and print it to stdout */
 
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include "xsocket.h"
@@ -32,9 +33,9 @@ static char *error_str(int error_code)
 
 #include <string.h>
 
-char *error_to_str(int error_code)
+char *error_str(int error_code)
 {
-  return strerror(error);}
+  return strerror(error_code);
 }
 
 #endif
