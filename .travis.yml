@@ -5,6 +5,7 @@ matrix:
     - os: linux
       dist: xenial
       sudo: required
+    - os: freebsd
     - os: osx
     - os: windows
 
