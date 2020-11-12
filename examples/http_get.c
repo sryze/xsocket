@@ -40,12 +40,6 @@ char *error_str(int error_code)
 
 #endif
 
-static int on_http_headers(
-    const char *buf, int len, int chunk_offset, int chunk_len)
-{
-  return strstr(buf + chunk_offset, "\r\n\r\n") != NULL;
-}
-
 static int http_get(const char *hostname, const char *uri, char **response)
 {
   int error = 0;
@@ -93,7 +87,7 @@ static int http_get(const char *hostname, const char *uri, char **response)
 
   snprintf(request_buf,
            sizeof(request_buf),
-           "GET %s HTTP/1.1\r\n\r\n",
+           "GET %s HTTP/1.0\r\n\r\n",
            uri);
   len = strlen(request_buf);
 
@@ -103,16 +97,13 @@ static int http_get(const char *hostname, const char *uri, char **response)
     goto error_return;
   }
 
-  buf = malloc(HTTP_RESPONSE_SIZE);
+  buf = calloc(1, HTTP_RESPONSE_SIZE);
   if (buf == NULL) {
     error = errno;
     goto error_return;
   }
 
-  /* buf is expected to be null-terminated in on_http_headers */
-  memset(buf, '\0', HTTP_RESPONSE_SIZE);
-
-  error = (int)recv_n(sock, buf, HTTP_RESPONSE_SIZE, 0, on_http_headers);
+  error = (int)recv_n(sock, buf, HTTP_RESPONSE_SIZE, 0, NULL);
   if (error <= 0) {
     error = socket_error;
     goto error_return;
@@ -122,12 +113,14 @@ static int http_get(const char *hostname, const char *uri, char **response)
 
   close_socket_nicely(sock);
   free(addr_str);
+
   return 0;
 
 error_return:
   freeaddrinfo(ai_result);
   free(addr_str);
   close_socket_nicely(sock);
+
   return error;
 }
 
