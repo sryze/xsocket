@@ -11,6 +11,7 @@
 
 #ifdef _WIN32
 
+#define strdup _strdup
 #define ERROR_STR_BUFFER_SIZE 1024
 
 static char *error_str(int error_code)
