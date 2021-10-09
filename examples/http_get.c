@@ -46,7 +46,8 @@ static int http_get(const char *hostname,
                     const char *port,
                     const char *uri,
                     char **request,
-                    char **response)
+                    char **response,
+                    int *gai_error)
 {
   int error = 0;
   socket_t sock;
@@ -70,6 +71,7 @@ static int http_get(const char *hostname,
 
   error = getaddrinfo(hostname, port, &ai_hints, &ai_result);
   if (error != 0) {
+    *gai_error = error;
     goto error_return;
   }
 
@@ -157,8 +159,9 @@ int main(int argc, char **argv)
   char *request;
   char *response;
   int error;
+  int gai_error;
 
-  if (argc <= 1) {
+  if (argc < 2) {
     fprintf(stderr,
       "Usage: %s <hostname> <port> <path>\n\n"
       "Examples:\n\n"
@@ -169,8 +172,8 @@ int main(int argc, char **argv)
   }
 
   hostname = argv[1];
-  port = argv[2];
-  path = argv[3];
+  port = argc >= 3 ? argv[2] : HTTP_DEFAULT_PORT;
+  path = argc >= 4 ? argv[3] : "/";
 
   error = socket_init();
   if (error != 0) {
@@ -178,9 +181,16 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  error = http_get(hostname, port, path, &request, &response);
+  gai_error = 0;
+  error = http_get(hostname,
+                   port,
+                   path,
+                   &request,
+                   &response,
+                   &gai_error);
   if (error != 0) {
-    fprintf(stderr, "Error: %s\n", error_str(error));
+    fprintf(stderr, "Error: %s\n",
+      gai_error != 0 ? gai_strerror(gai_error) : error_str(error));
     return 1;
   }
 
