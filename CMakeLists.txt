@@ -1,6 +1,6 @@
-project(xsocket)
-
 cmake_minimum_required(VERSION 2.8)
+
+project(xsocket)
 
 option(XSOCKET_BUILD_EXAMPLES "Build xsocket library examples" OFF)
 
